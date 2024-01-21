@@ -1,5 +1,4 @@
 from flask import Flask, request,jsonify
-from datetime import datetime, timedelta,timezone
 from flask_jwt_extended import create_access_token, JWTManager,get_jwt,unset_jwt_cookies, jwt_required,get_jwt_identity
 from flask_cors import CORS
 from config import Config
@@ -24,18 +23,14 @@ def create_token():
     password = request.json.get("password",None)
     
     user = User.query.filter_by(email= email).first()
-
-    if not check_password_hash(user.password, password):
-        return jsonify({"error":"Wrong password"}), 401
     
     if user is None:
         return jsonify({"error":"Wrong email or password"}), 401
     
+    if not check_password_hash(user.password, password):
+        return jsonify({"error":"Wrong password"}), 401
+    
     access_token = create_access_token(identity=email)
-    user.token = access_token
-    db.session.commit()
-
-
     return jsonify({
         "access_token" : access_token,
         "email": email,  
@@ -55,8 +50,8 @@ def signup():
 
         hashed_password = generate_password_hash(password)
         new_user = User(email=email, password=hashed_password, name=name)
-        access_token = create_access_token(identity=new_user.email)
-        new_user.token = access_token
+        # access_token = create_access_token(identity=new_user.email)
+        # new_user.token = access_token
         db.session.add(new_user)
         db.session.commit()
         
@@ -65,7 +60,7 @@ def signup():
             "password": new_user.password,
             "name": new_user.name,
             "id": new_user.id,
-            "access_token": new_user.token
+            # "access_token": new_user.token
         }), 201
 
     except Exception as e:
@@ -99,47 +94,44 @@ def signup():
 #         "access_token": new_user.token
 #     }), 201
     
-@app.route('/signin', methods=['POST'])
-def signin():
-    email = request.json["email"]
-    password = request.json["password"]
-    user = User.query.filter_by(email=email).first()
-    if user:
-        if check_password_hash(user.password, password):
-            return jsonify ({
-                "email": user.email,
-                "password" : user.password,
-                "name": user.name,
-                "id": user.id,
-                "access_token": user.token
-            }), 201
+# @app.route('/signin', methods=['POST'])
+# def signin():
+#     email = request.json["email"]
+#     password = request.json["password"]
+#     user = User.query.filter_by(email=email).first()
+#     if user:
+#         if check_password_hash(user.password, password):
+#             return jsonify ({
+#                 "email": user.email,
+#                 "password" : user.password,
+#                 "name": user.name,
+#                 "id": user.id,
+#                 "access_token": user.token
+#             }), 201
         
-        else:
-            return jsonify({"error": "Incorrect password"}), 401
-    else:
-        return jsonify({"error": "User not found"}), 404
+#         else:
+#             return jsonify({"error": "Incorrect password"}), 401
+#     else:
+#         return jsonify({"error": "User not found"}), 404
     
     
-@app.route('/profile', methods=['GET'])
-@jwt_required()
-def my_profile():
-    current_user_email = get_jwt_identity()
-
-    if not current_user_email:
-        return jsonify({"error": "unauthorized access"}), 401
-
-    user = User.query.filter_by(email=current_user_email).first()
-
-    if user is not None:
-        return jsonify({
-            "email": user.email,
-                "password" : user.password,
-                "name": user.name,
-                "id": user.id,
-                "access_token": user.token
-            }), 201
-    else:
-        return jsonify({"error": "User not found"}), 404
+@app.route('/profile/<getemail>')
+@jwt_required() 
+def my_profile(getemail):
+    print(getemail)
+    if not getemail:
+        return jsonify({"error": "Unauthorized Access"}), 401
+       
+    user = User.query.filter_by(email=getemail).first()
+  
+    response_body = {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "about" : user.about
+    }
+    
+    return response_body, 201
 
     
 @app.route('/logout', methods=["POST"])

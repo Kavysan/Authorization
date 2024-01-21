@@ -13,4 +13,4 @@ class User(db.Model):
     name = db.Column(db.String(150), default='')
     email = db.Column(db.String(150), nullable = False, unique = True)
     password = db.Column(db.String, nullable = False) 
-    token = db.Column(db.String, default = '', unique = True )
+    # token = db.Column(db.String, default = '', unique = True )
