@@ -128,7 +128,7 @@ def my_profile(getemail):
         "id": user.id,
         "name": user.name,
         "email": user.email,
-        "about" : user.about
+        # "about" : user.about
     }
     
     return response_body, 201

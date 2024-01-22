@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
 
@@ -25,8 +25,10 @@ export default function Login() {
                 console.log(response)
                 alert("Successful Login");
                 localStorage.setItem('email', loginForm.email)
-                localStorage.setItem('token', response.data.access_token)
-                // props.setToken(response.data.access_token)
+                // localStorage.setItem('token', response.data.access_token)
+                console.log(response.data.access_token)
+                props.setToken(response.data.access_token)
+                console.log(setToken)
                 navigate('/dashboard');
             } else {
                 console.error("Unexpected response status:", response.status);
@@ -94,10 +96,9 @@ export default function Login() {
                   </div>
   
                   <div className="text-center text-lg-start mt-4 pt-2">
-                    <button type="button" className="btn btn-primary btn-lg" onClick={btnlogin} >Login</button>
-                    <p className="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="/register" className="link-danger">Register</a></p>
+                    <Link to={'/login'} className="btn btn-primary btn-lg" onClick={btnlogin} >Login</Link>
+                    <p className="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <Link to={'/register'} className="link-danger">Register</Link></p>
                   </div>
-  
                 </form>
               </div>
             </div>

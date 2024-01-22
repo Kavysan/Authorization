@@ -6,11 +6,12 @@ import Home from './components/Home'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 import Header from './components/Header'
+import Register from './components/Register';
 
 // 
 function App() {
 
-  const { token, removeToken, setToken} = useToken()
+  const { token, removeToken, setToken, saveToken} = useToken()
   // console.log(token)
 
   return (
@@ -23,9 +24,8 @@ function App() {
         <Header token={removeToken} />
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/login" element={<Login />} /> */}
           {!token && token !== "" && token !== undefined ? (
-            <Route path="/login" element={<Login setToken={setToken} />} />
+            <Route path="/login" element={<Login  setToken={setToken} />} />
           ) : (
             <>
               <Route
@@ -34,6 +34,7 @@ function App() {
               />
             </>
           )}
+          <Route path="/register" element={<Register />} />
         </Routes>
       </BrowserRouter>
 

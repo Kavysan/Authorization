@@ -10,23 +10,24 @@ function Dashboard() {
     }, []);
      
     const email = localStorage.getItem('email');
+    console.log(email)
      
     function getUsers() { 
         axios({
           method: "GET",
           url:`http://127.0.0.1:5000/profile/${email}`, 
           headers: {
-            Authorization: 'Bearer ' + props.token
+            // Authorization: 'Bearer ' + props.token
+            Authorization: 'Bearer ' + localStorage.getItem('token')
           }
         })
         .then((response) => {
             console.log(response)
-          const res =response.data
+          const res = response.data
           res.access_token && props.setToken(res.access_token)
           setProfileData(({
             profile_name: res.name,
-            profile_email: res.email,
-            about_me: res.about}))
+            profile_email: res.email}))
         }).catch((error) => {
           if (error.response) {
             console.log(error.response)
@@ -64,14 +65,11 @@ function Dashboard() {
                                 <p className="text-muted">{profileData.profile_email}</p>
                             </div>
                             <div className="col-6 mb-3">
-                                <h6>Phone</h6>
-                                <p className="text-muted">123 456 789</p>
+                                <h6>Name</h6>
+                                <p className="text-muted">{profileData.profile_name}</p>
                             </div>
                             </div>
-                            <h6>About</h6>
-                            <div className="d-flex justify-content-start">
-                            {profileData.about_me}
-                            </div>
+                    
                         </div>
                     </div>    
  
